@@ -1,0 +1,58 @@
+
+@function pow($number, $exponent) { // necessary for our luminance function
+    $value: 1;
+  
+    @if $exponent > 0 {
+      @for $i from 1 through $exponent {
+        $value: $value * $number;
+      }
+    }
+  
+    @return $value;
+  }
+
+// By calculating the luminance of a color, we can compensate if its too dark or too neutral
+@function luminance($color) {
+    $colors: ( 'red': red($color), 'green': green($color), 'blue': blue($color));
+    @each $name,
+    $value in $colors {
+        $adjusted: 0;
+        $value: $value / 255;
+        @if $value < 0.03928 {
+            $value: $value / 12.92;
+        }
+        @else {
+            $value: ($value + .055) / 1.055;
+            $value: pow($value, 2.4);
+        }
+        $colors: map-merge($colors, ($name: $value));
+    }
+    @return (map-get($colors, 'red') * .2126)+(map-get($colors, 'green') * .7152)+(map-get($colors, 'blue') * .0722);
+}
+
+@function compensateLuminance($color,$lum) {
+    
+    @if $luminance < 0.5 {
+        $primary: lighten($color, 8*(1+$luminance));
+        @return($primary);
+    }
+    @else {
+        $primary: $color;
+        @return($primary);
+    }
+}
+
+@mixin themes($color) {
+    $secondary: darken($color, 30);
+
+    @for $i from 1 through 4 {
+        .theme-#{$i} {
+            color: lighten($secondary, 15*$i);
+            background-color: darken($color, 8*$i);
+            
+        }
+        .shadow-#{$i} {
+            box-shadow: rgba(darken($color, 10*$i), 0.3) 0 0 $i*1px $i*1px;
+        }
+    }    
+}

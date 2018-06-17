@@ -1,29 +1,40 @@
-// Change the primary color to see the magic happen!
-$primary   : yellow;
-$secondary : darken($primary,55);
+@import 'theme-generator';
+$primary: yellow; // $primary is the color you want to use
+$luminance: luminance($primary); //calculates color luminance
+$themeColor: compensateLuminance($primary,$luminance);
+
 
 .wrapper {
-  background-color: lighten($primary,30);
-  display         : flex;
-  height          : 100vh;
-  align-items     : center;
-  justify-content : space-around;
-  
-  .card {
-    font-family: verdana;
-    display         : flex;
-    width           : 250px;
-    height          : 250px;
-    border-radius   : 5px;
-    align-items     : center;
-    justify-content : center;
-  }
-  
-  @for $i from 1 through 4 {
-    .theme-#{$i} {
-      color            : lighten($secondary,10*$i);
-      background-color : darken($primary,12*$i);
-      box-shadow       : rgba(darken($primary,20*$i),0.6) 0 0 $i*2px $i*1px;
+    // border: solid 3px invert($themeColor);
+    background-color: lighten($themeColor, 30);
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    .card {
+        font-family: verdana;
+        display: flex;
+        width: 250px;
+        height: 250px;
+        margin: 10px;
+        border-radius: 5px;
+        align-items: center;
+        justify-content: center;
+        
     }
-  }
+    .container {
+        margin: 10%;
+        width: 30%;
+        .content,.header {
+         padding: 10px;
+        }
+    }  
+    .btn {
+        text-align: center;
+        min-width: 60px;
+        padding: 10px;
+    }
 }
+
+@include themes($themeColor);
